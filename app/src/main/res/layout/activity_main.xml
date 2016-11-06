@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.atoms.atoms.MainMenu">
+
+    <ImageView
+        android:layout_width="144dp"
+        android:layout_height="49dp"
+        app:srcCompat="@drawable/logo2"
+        android:id="@+id/imageView2"
+        android:adjustViewBounds="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true" />
+
+    <ViewAnimator
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/imageView2"
+        android:layout_alignParentStart="true"
+        android:visibility="invisible"
+        android:id="@+id/viewAnimator1">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:paddingLeft="40dp"
+                android:paddingRight="40dp"
+                android:paddingTop="40dp"
+                android:paddingBottom="40dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:srcCompat="@drawable/atom"
+                android:id="@+id/imageView3"
+                android:scaleType="fitStart"
+                android:adjustViewBounds="true" />
+            <Button
+                android:text="@string/play"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/button"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:textSize="36sp"
+                android:onClick="btnStart_click"
+                />
+
+            <Button
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:text="@string/rules"
+                android:onClick="btnHelp_click"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/button2" />
+
+            <Button
+                android:text="@string/exit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/button3"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:onClick="btnExit_click"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/level_of_difficulty"
+                android:textSize="34sp"/>
+            <Button
+                android:textSize="34sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/low"
+                android:textColor="#00ff00"
+                android:textAlignment="center"
+                android:layout_gravity="center"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:onClick="btnLow"/>
+            <Button
+                android:textSize="34sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/epic"
+                android:textColor="#d500ff"
+                android:textAlignment="center"
+                android:layout_gravity="center"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:onClick="btnEpic"
+                />
+            <Button
+                android:textSize="34sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/legendary"
+                android:textColor="#ff7700"
+                android:layout_gravity="center"
+                android:textAlignment="center"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:onClick="btnLegendary" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/help"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/atomhelp"
+                />
+
+        </LinearLayout>
+    </ViewAnimator>
+
+</RelativeLayout>

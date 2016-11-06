@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="play">Бозӣ кардан</string>
+    <string name="exit">Баромад</string>
+    <string name="back">Баргаштан</string>
+    <string name="sound">Садо</string>
+    <string name="language">Забон</string>
+    <string name="rules">Қоида</string>
+    <string name="level_of_difficulty">Дараҷаи душворӣ</string>
+    <string name="low">Осон</string>
+    <string name="legendary">Мушкил</string>
+    <string name="epic">Миёна</string>
+    <string name="help">Дар зери майдони росткунҷашакл атомҳо пинҳон карда шудаанд. Бо истифодаи лазерҳо Шумо бояд ҷои атомҳоро муайян намоед. Барои ҳар як лазер танҳо ҷои баромаданаш ва ҷои даромаданаш маълум мешавад. Атомҳо лазерро аз руи қоидаи муайян инъикос медиҳанд. Шарти бозӣ муайян кардани макони атомҳо. Миқдори лазерҳо маҳдуд аст.</string>
+    <string name="check_button">Санҷиш</string>
+    <string name="number_of_shoots">Лазерҳо:</string>
+    <string name="number_of_atoms">Атомҳо:</string>
+    <string name="level">Дараҷа:</string>
+</resources>

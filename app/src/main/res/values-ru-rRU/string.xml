@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="play">Играть</string>
+    <string name="exit">Выход</string>
+    <string name="back">Вернуться</string>
+    <string name="sound">Звук</string>
+    <string name="language">Язык</string>
+    <string name="rules">Правила</string>
+    <string name="level_of_difficulty">Уровень сложности</string>
+    <string name="low">Лёгкий</string>
+    <string name="legendary">Легендарный</string>
+    <string name="epic">Эпический</string>
+    <string name="help">Есть прямоугольное поле(ширма), за которой расположены атомы, и лазер, которым можно стрелять по атомам в плоскости ширмы параллельно осям координат. Видно только место, где луч влетает за ширму, и место, где он вылетает. При этом атомы могут отражать луч по определенным правилам. Задача - отгадать расположение атомов за ограниченное число выстрелов из лазера.</string>
+    <string name="check_button">Проверить</string>
+    <string name="number_of_shoots">Лазеры:</string>
+    <string name="number_of_atoms">Атомы:</string>
+    <string name="level">Уровень:</string>
+    <string name="button_reset">Повторить</string>
+    <string name="button_increase_map_size">++размер;</string>
+</resources>

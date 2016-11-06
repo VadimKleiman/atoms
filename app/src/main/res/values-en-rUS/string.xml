@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="play">Play</string>
+    <string name="exit">Exit</string>
+    <string name="back">Back</string>
+    <string name="sound">Sound</string>
+    <string name="language">Language</string>
+    <string name="rules">Rules</string>
+    <string name="level_of_difficulty">Level of difficulty</string>
+    <string name="low">Low</string>
+    <string name="legendary">Legendary</string>
+    <string name="epic">Epic</string>
+    <string name="help">TEST</string>
+    <string name="check_button">Check results</string>
+    <string name="number_of_shoots">Lasers left:</string>
+    <string name="number_of_atoms">Atoms left:</string>
+    <string name="level">Level:</string>
+    <string name="button_reset">Reset</string>
+    <string name="button_increase_map_size">++size;</string>
+</resources>

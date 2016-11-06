@@ -1,0 +1,342 @@
+package com.example.atoms.atoms;
+
+import android.graphics.Color;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
+
+
+/**
+ * Class for manipulating game data and calculating all we need for game.
+ * <p>
+ * Helper class for AtomGameView, they do all stuff about game drawing and calculating
+ */
+public class GameMap {
+    final int DIRECTION_UP = 0, DIRECTION_DOWN = 1, DIRECTION_RIGHT = 2, DIRECTION_LEFT = 3;
+    final int ATOM_CODE = 1, FREE_SPACE = 0, MOVE_IN = 2, MOVE_OUT = 3, DOUBLE_LASERS = 4;
+    ArrayList<Cell> mSolutionAtomArray;
+    int mNumberOfAtoms;
+    ArrayList<Line> mLazersLines;
+    int[][] mCurrentLevelMap;
+    int mLasersCount = 0;
+    HashMap<Cell, Line> mLazersLinesMap;
+    private Random mRnd;
+    private float mHColor = 131071.65535f; // oh
+
+
+    public GameMap(int n, int levelMode) {
+        mRnd = new Random();
+        mLazersLines = new ArrayList<>();
+        mSolutionAtomArray = new ArrayList<>();
+        mLazersLinesMap = new HashMap<>();
+        Level lvl = new Level(n - 2, levelMode); // 2 fo borders
+        mCurrentLevelMap = addBoardersToLevel(lvl.getMatrix());
+        initSolutionArrayAndAtomNumber();
+        //mNumberOfAtoms = lvl.get_atoms_count();
+        mLasersCount = lvl.getLaser_count();
+
+    }
+
+
+    private void initSolutionArrayAndAtomNumber() {
+        mNumberOfAtoms = 0;
+        for (int y = 0; y < getHeight(); y++) {
+            for (int x = 0; x < getWidth(); x++) {
+                if (mCurrentLevelMap[y][x] == ATOM_CODE) {
+                    mSolutionAtomArray.add(new Cell(x, y)); // {x, y}//bad code, repair
+                    mNumberOfAtoms++;
+                }
+            }
+        }
+    }
+
+    private int[][] addBoardersToLevel(int[][] level) {
+        int[][] levelWithBoarders = new int[level.length + 2][level[0].length + 2];
+
+        // СЃРѕРґРµСЂР¶РёРјРѕРµ Рё Р±РѕРєРѕРІС‹Рµ
+        for (int i = 1; i < levelWithBoarders.length - 1; i++) {
+            for (int j = 1; j < levelWithBoarders[0].length - 1; j++) { //СЃРѕРґРµСЂР¶РёРјРѕРµ
+                levelWithBoarders[i][j] = level[i - 1][j - 1];
+            }
+        }
+        return levelWithBoarders;
+    }
+
+    public int getHeight() {
+        return mCurrentLevelMap.length;
+    }
+
+    public int getWidth() {
+        return mCurrentLevelMap[0].length;
+    }
+
+    public void addMoveLine(int x1, int y1, int x2, int y2, int color) {
+        mLazersLines.add(new Line(x1, y1, x2, y2, color));
+    }
+
+
+    /**
+     * РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ Р»СѓС‡ РІС‹С€РµР» РёР· РїСѓС‚РµС€РµСЃС‚РІРёСЏ РїРѕ РїРѕР»СЋ
+     *
+     * @param cellX
+     * @param cellY
+     * @param direction
+     * @return
+     */
+    private boolean isExit(int cellX, int cellY, int direction) {
+        return (cellX == 0 && direction == DIRECTION_LEFT) ||
+                (cellX == getWidth() - 1 && direction == DIRECTION_RIGHT) ||
+                (cellY == 0 && direction == DIRECTION_UP) ||
+                (cellY == getHeight() - 1 && direction == DIRECTION_DOWN);
+    }
+
+    protected boolean isMoveAble(int mTouchX, int mTouchY, int pixForBlockX, int pixForBlockY) {
+        int cellY, cellX;
+        cellX = Math.min(mTouchX / (pixForBlockX /* + 1 */), getWidth() - 1); // Р±РµСЃРїРѕРґРѕР±РЅС‹Р№ РєРѕСЃС‚С‹Р»СЊ
+        cellY = Math.min(mTouchY / (pixForBlockY /* + 1 */), getHeight() - 1);
+
+        return (mCurrentLevelMap[cellY][cellX] == FREE_SPACE ||
+                mCurrentLevelMap[cellY][cellX] == MOVE_OUT) &&
+                mLasersCount > 0;
+    }
+
+    /**
+     * РўСЂР°СЃСЃРёСЂСѓРµС‚ Р»СѓС‡ РїРѕ Р°С‚РѕРјР°Рј (РІСЃРµ РїСЂР°РІРёР»Р° РёРіСЂС‹ С‚СѓС‚), РґРѕР±Р°РІР»СЏРµС‚ РїР°СЂСѓ Р»СѓС‡РµР№ РІ arraylis
+     *
+     * @param touchX
+     * @param touchY
+     * @param laserDrection
+     * @param pixForBlockX
+     * @param pixForBlockY
+     */
+    public void MakeMove(int touchX, int touchY, int laserDrection, int pixForBlockX, int pixForBlockY) {
+
+        int currentDirection = laserDrection;
+        int currentColor = nextColor(); //Color.argb(255, mRnd.nextInt(256), mRnd.nextInt(256), mRnd.nextInt(256));
+        // РїСЂРѕСЃС‚Р°РІРёС‚СЊ РєРѕРѕСЂРґС‹ РІ РјР°СЃСЃРёРІРµ
+        // РґРѕР±Р°РІРёС‚СЊ РІ Р°СЂСЂСЌР№Р»РёСЃС‚ РґР»СЏ РѕС‚СЂРёСЃРѕРІРєРё РЅР°С‡Р°Р»Р° Р»СѓС‡Р°
+
+        int cellY;
+        int cellX;
+        int pixelOffsetX = pixForBlockX / 4;
+        int pixelOffsetY = pixForBlockY / 4;
+
+        cellX = Math.min(touchX / (pixForBlockX /* + 1 */), getWidth() - 1); // Р±РµСЃРїРѕРґРѕР±РЅС‹Р№ РєРѕСЃС‚С‹Р»СЊ
+        cellY = Math.min(touchY / (pixForBlockY /* + 1 */), getHeight() - 1);
+
+
+        //move_in РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ, РїСЂРѕРІРµСЂРєР° РїРµСЂРµРґ РІС‹Р·РѕРІРѕРј РјРµС‚РѕРґР°
+        if (mCurrentLevelMap[cellY][cellX] == FREE_SPACE) // РЅРµ Р·Р°РІРїСѓСЃРєР°Р»Рё Р»СѓС‡
+            mCurrentLevelMap[cellY][cellX] = MOVE_IN; // РїРѕРєР°Р·С‹РІР°РµРј, С‡С‚Рѕ Р»СѓС‡ РїСѓС‰РµРЅ
+        else if (mCurrentLevelMap[cellY][cellX] == MOVE_OUT) { // РµСЃР»Рё РІ СЌС‚РѕР№ СЏС‡РµР№РєРµ РІС‹С…РѕРґ Р»СѓС‡Р°, С‚Рѕ
+            mCurrentLevelMap[cellY][cellX] = DOUBLE_LASERS;
+        }
+
+        //accurate drawing lines
+        switch (currentDirection) {
+            case DIRECTION_LEFT:
+                pixelOffsetY = pixForBlockY / 4;
+                break;
+            case DIRECTION_RIGHT:
+                pixelOffsetY = 3 * pixForBlockY / 4;
+                break;
+            case DIRECTION_UP:
+                pixelOffsetX = 3 * pixForBlockX / 4;
+                break;
+            case DIRECTION_DOWN:
+                pixelOffsetX = pixForBlockX / 4;
+                break;
+            default:
+                break;
+        }
+
+
+        Line lazerInputLine = createLazerLine(cellX, cellY,
+                pixelOffsetX,
+                pixelOffsetY,
+                laserDrection,
+                currentColor,
+                pixForBlockX,
+                pixForBlockY
+        );
+        Cell inputCell = new Cell(cellX, cellY);
+        inputCell.setIsOutpuLine(false);
+
+
+        do { // С‚СЂР°СЃСЃРёСЂСѓРµРј РїСѓС‚СЊ
+            switch (currentDirection) {
+                case DIRECTION_RIGHT:
+                    if (mCurrentLevelMap[cellY][cellX + 1] == ATOM_CODE) {//if next РІ Р°С‚РѕРј
+                        currentDirection = DIRECTION_DOWN; // rotate
+                        cellX++;
+                    } else {
+                        cellX++; // go to next cell and check endlessness
+                        if (mCurrentLevelMap[cellY][cellX] == MOVE_IN) {
+                            mCurrentLevelMap[cellY][cellX] = DOUBLE_LASERS;
+                        } else {
+                            mCurrentLevelMap[cellY][cellX] = MOVE_OUT;
+                        }
+                    }
+                    break;
+
+                case DIRECTION_LEFT:
+                    if (mCurrentLevelMap[cellY][cellX - 1] == ATOM_CODE) {//РµСЃР»Рё РїРѕРїР°РґР°РµРј РІ Р°С‚РѕРј
+                        currentDirection = DIRECTION_UP;
+                        cellX--;
+                    } else {
+                        cellX--;
+                        if (mCurrentLevelMap[cellY][cellX] == MOVE_IN) {
+                            mCurrentLevelMap[cellY][cellX] = DOUBLE_LASERS; // РґРµР»Р°РµРј С€Р°Рі
+                        } else {
+                            mCurrentLevelMap[cellY][cellX] = MOVE_OUT; // РґРѕР±РµРіР°Р»РёСЃСЊ
+                        }
+                    }
+                    break;
+                case DIRECTION_UP:
+                    if (mCurrentLevelMap[cellY - 1][cellX] == ATOM_CODE) { //РµСЃР»Рё РїРѕРїР°РґР°РµРј РІ Р°С‚РѕРј
+                        currentDirection = DIRECTION_RIGHT;
+                        cellY--;
+                    } else {
+                        if (mCurrentLevelMap[cellY][cellX] == MOVE_OUT)
+                            mCurrentLevelMap[cellY][cellX] = FREE_SPACE; // СѓР±РёСЂР°РµРј Р·Р° СЃРѕР±РѕР№
+                        cellY--;
+                        if (mCurrentLevelMap[cellY][cellX] == MOVE_IN) {
+                            mCurrentLevelMap[cellY][cellX] = DOUBLE_LASERS;
+                        } else {
+                            mCurrentLevelMap[cellY][cellX] = MOVE_OUT;
+                        }
+                    }
+                    break;
+                case DIRECTION_DOWN:
+                    if (mCurrentLevelMap[cellY + 1][cellX] == ATOM_CODE) { //РµСЃР»Рё РїРѕРїР°РґР°РµРј РІ Р°С‚РѕРј
+                        currentDirection = DIRECTION_LEFT;
+                        cellY++;
+                    } else {
+                        if (mCurrentLevelMap[cellY][cellX] == MOVE_OUT)
+                            mCurrentLevelMap[cellY][cellX] = FREE_SPACE; // СѓР±РёСЂР°РµРј Р·Р° СЃРѕР±РѕР№
+                        cellY++;
+                        if (mCurrentLevelMap[cellY][cellX] == MOVE_IN) {
+                            mCurrentLevelMap[cellY][cellX] = DOUBLE_LASERS;
+                        } else {
+                            mCurrentLevelMap[cellY][cellX] = MOVE_OUT;
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } while (!isExit(cellX, cellY, currentDirection));
+
+
+        //exit
+        //accurate drawing lines
+        switch (currentDirection) {
+            case DIRECTION_LEFT:
+                pixelOffsetY = pixForBlockY / 4;
+                break;
+            case DIRECTION_RIGHT:
+                pixelOffsetY = 3 * pixForBlockY / 4;
+                break;
+            case DIRECTION_UP:
+                pixelOffsetX = 3 * pixForBlockX / 4;
+                break;
+            case DIRECTION_DOWN:
+                pixelOffsetX = pixForBlockX / 4;
+                break;
+            default:
+                break;
+        }
+
+        // РґРѕР±Р°РІРёС‚СЊ РІ arraylist РґР»СЏ РѕС‚СЂРёСЃРѕРІРєРё РљРћРќР•Р¦ Р»СѓС‡Р°
+        Line lazerOutputLine = createLazerLine(
+                cellX,
+                cellY,
+                pixelOffsetX,
+                pixelOffsetY,
+                currentDirection,
+                currentColor,
+                pixForBlockX,
+                pixForBlockY
+        );
+
+        //РґРѕР±Р°РІР»СЏРµРј РёС… РІ РјР°РїСѓ РґР»СЏ РїРµСЂРµРєСЂРµСЃС‚РЅРѕР№ СЃСЃС‹Р»РєРё
+        lazerInputLine.setPair(lazerOutputLine);
+        lazerOutputLine.setPair(lazerInputLine);
+
+        Cell outputCell = new Cell(cellX, cellY);
+        outputCell.setIsOutpuLine(true);
+
+        mLazersLinesMap.put(inputCell, lazerInputLine);
+        mLazersLinesMap.put(outputCell, lazerOutputLine);
+
+
+        mLasersCount--;
+    } //end MakeMove method
+
+    private int nextColor() {
+        //use golden ratio
+        float val = 199.0f;
+
+        mHColor *= val;
+        mHColor %= 359;
+
+        int resColor = Color.HSVToColor(
+                new float[]{mHColor,
+                        (0.7f + (mRnd.nextFloat() % 0.3f)),
+                        (0.85f + (mRnd.nextFloat() % 0.15f))}
+        );
+        return resColor;
+    }
+
+    //return linee, cause arcitecutre of the app is awfull
+    private Line createLazerLine(int cellX, int cellY,
+                                 int pixelOffsetX,
+                                 int pixelOffsetY,
+                                 int direction,
+                                 int currentColor,
+                                 int pixForBlockX,
+                                 int pixForBlockY
+    ) {
+        switch (direction) { // РІС…РѕРґ Р»Р°Р·РµСЂР°
+            case DIRECTION_RIGHT:
+                int x1 = cellX * pixForBlockX;
+                int y1 = cellY * pixForBlockY + pixelOffsetY;
+                int x2 = cellX * pixForBlockX + pixForBlockX;
+                int y2 = cellY * pixForBlockY + pixelOffsetY;
+                addMoveLine( // x-s left to right
+                        x1, y1, x2, y2,
+                        currentColor); // old, deprecated, remove
+                return new Line(x1, y1, x2, y2, currentColor, null);
+
+            case DIRECTION_LEFT:
+                x1 = cellX * pixForBlockX + pixForBlockX;
+                y1 = cellY * pixForBlockY + pixelOffsetY;
+                x2 = cellX * pixForBlockX;
+                y2 = cellY * pixForBlockY + pixelOffsetY;
+                addMoveLine(x1, y1, x2, y2, currentColor);
+                return new Line(x1, y1, x2, y2, currentColor, null);
+
+            case DIRECTION_UP:
+                x1 = cellX * pixForBlockX + pixelOffsetX;
+                y1 = cellY * pixForBlockY + pixForBlockY;
+                x2 = cellX * pixForBlockX + pixelOffsetX;
+                y2 = cellY * pixForBlockY;
+                addMoveLine(x1, y1, x2, y2, currentColor);
+                return new Line(x1, y1, x2, y2, currentColor, null);
+
+            case DIRECTION_DOWN:
+                x1 = cellX * pixForBlockX + pixelOffsetX;
+                y1 = cellY * pixForBlockY;
+                x2 = cellX * pixForBlockX + pixelOffsetX;
+                y2 = cellY * pixForBlockY + pixForBlockY;
+                addMoveLine(x1, y1, x2, y2, currentColor);
+                return new Line(x1, y1, x2, y2, currentColor, null);
+
+            default:
+                return null;
+        }
+    }
+
+}
+
