@@ -5,3 +5,6 @@
 # Установка
 1. Разрешить установку приложений из неизвестных источников (Настройка->Безопасность->Неизвестные источники)
 2. Скачать и установить файл Atom[1].apk на устройство под управлением системы Android
+
+# Геймплей
+[![IMAGE ALT TEXT HERE](https://github.com/VadimKleiman/atoms/blob/master/app/src/main/res/drawable/logo.png)](https://www.youtube.com/watch?v=7LJ6EkbtvVo&feature=youtu.be)
